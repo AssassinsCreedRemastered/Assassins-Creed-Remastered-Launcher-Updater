@@ -15,6 +15,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using SharpCompress.Common;
+using SharpCompress.Archives;
+using System.Diagnostics;
 
 namespace Assassins_Creed_Remastered_Launcher_Updater
 {
@@ -67,7 +70,7 @@ namespace Assassins_Creed_Remastered_Launcher_Updater
             }
         }
 
-        private async void DownloadNewVersion()
+        private async Task DownloadNewVersion()
         {
             try
             {
@@ -91,11 +94,92 @@ namespace Assassins_Creed_Remastered_Launcher_Updater
             Progress.Value = e.ProgressPercentage;
         }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        private async Task Installation()
+        {
+            try
+            {
+                await Extract(path + @"\Launcher.zip", path);
+                await Cleanup();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                return;
+            }
+        }
+
+        // Used to extract files
+        private async Task Extract(string fullPath, string directory)
+        {
+            try
+            {
+                using (var archive = ArchiveFactory.Open(fullPath))
+                {
+                    foreach (var entry in archive.Entries)
+                    {
+                        if (!entry.IsDirectory)
+                        {
+                            entry.WriteToDirectory(directory, new ExtractionOptions()
+                            {
+                                ExtractFullPath = true,
+                                Overwrite = true
+                            });
+                        }
+                    }
+                }
+                GC.Collect();
+                await Task.Delay(10);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                return;
+            }
+        }
+
+        private async Task Cleanup()
+        {
+            try
+            {
+                if (File.Exists(path + @"\Launcher.zip"))
+                {
+                    File.Delete(path + @"\Launcher.zip");
+                }
+                
+                await Task.Delay(10);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                return;
+            }
+        }
+
+        private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             GetDirectory();
             DeleteOldLauncher();
-            DownloadNewVersion();
+            await DownloadNewVersion();
+            await Installation();
+            OpenLauncher.IsEnabled = true;
+        }
+
+        private void OpenLauncher_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Process Launcher = new Process();
+                Launcher.StartInfo.WorkingDirectory = path;
+                Launcher.StartInfo.FileName = "Assassins Creed Remastered Launcher.exe";
+                Launcher.StartInfo.UseShellExecute = true;
+                Launcher.Start();
+                Environment.Exit(0);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                return;
+            }
         }
     }
 }
