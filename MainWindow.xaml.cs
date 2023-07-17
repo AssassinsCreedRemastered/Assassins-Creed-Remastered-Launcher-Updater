@@ -98,7 +98,12 @@ namespace Assassins_Creed_Remastered_Launcher_Updater
         {
             try
             {
-                await Extract(path + @"\Launcher.zip", path);
+                if (!Directory.Exists(path + @"\Update"))
+                {
+                    Directory.CreateDirectory(path + @"\Update");
+                }
+                await Extract(path + @"\Launcher.zip", path + @"\Update");
+                await Move();
                 await Cleanup();
             }
             catch (Exception ex)
@@ -137,6 +142,28 @@ namespace Assassins_Creed_Remastered_Launcher_Updater
             }
         }
 
+        private async Task Move()
+        {
+            try
+            {
+                if (Directory.Exists(path + @"\Update"))
+                {
+                    foreach (string file in Directory.GetFiles(path + @"\Update"))
+                    {
+                        if (System.IO.Path.GetFileName(file) != "Assassins Creed Remastered Launcher Updater.exe")
+                        {
+                            System.IO.File.Move(file, path + @"\" + System.IO.Path.GetFileName(file));
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                return;
+            }
+        }
+
         private async Task Cleanup()
         {
             try
@@ -145,7 +172,11 @@ namespace Assassins_Creed_Remastered_Launcher_Updater
                 {
                     File.Delete(path + @"\Launcher.zip");
                 }
-                
+                if (Directory.Exists(path + @"\Update"))
+                {
+                    Directory.Delete(path + @"\Update", true);
+                }
+
                 await Task.Delay(10);
             }
             catch (Exception ex)
