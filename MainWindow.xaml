@@ -8,7 +8,7 @@
         Title="AC Remastered Launcher Updater" Height="200" Width="310" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
     <Grid>
         <Label Content="Downloading new version" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,90" FontSize="18"></Label>
-        <ProgressBar x:Name="Progress" Height="20" Width="270"></ProgressBar>
+        <ProgressBar x:Name="Progress" Height="20" Width="270" Minimum="0" Maximum="100"></ProgressBar>
         <Button x:Name="OpenLauncher" Content="Open Launcher" HorizontalAlignment="Center" Margin="0,100,0,0" VerticalAlignment="Center" IsEnabled="False" FontSize="18"></Button>
     </Grid>
 </Window>

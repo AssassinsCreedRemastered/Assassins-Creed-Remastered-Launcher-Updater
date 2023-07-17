@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -54,7 +56,7 @@ namespace Assassins_Creed_Remastered_Launcher_Updater
             {
                 if (File.Exists(path + @"\Assassins Creed Remastered Launcher.exe"))
                 {
-                    Console.WriteLine("Exists");
+                    File.Delete(path + @"\Assassins Creed Remastered Launcher.exe");
                 }
                 await Task.Delay(10);
             }
@@ -65,10 +67,35 @@ namespace Assassins_Creed_Remastered_Launcher_Updater
             }
         }
 
+        private async void DownloadNewVersion()
+        {
+            try
+            {
+                using (WebClient client = new WebClient())
+                {
+                    client.DownloadProgressChanged += WebClientDownloadProgressChanged;
+                    await client.DownloadFileTaskAsync(new Uri("https://github.com/AssassinsCreedRemastered/Assassins-Creed-Remastered-Launcher/releases/download/latest/Launcher.zip"), path + @"\Launcher.zip");
+                }
+                await Task.Delay(10);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                return;
+            }
+        }
+
+        // This is used to show progress on the ProgressBar
+        private void WebClientDownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
+        {
+            Progress.Value = e.ProgressPercentage;
+        }
+
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             GetDirectory();
             DeleteOldLauncher();
+            DownloadNewVersion();
         }
     }
 }
