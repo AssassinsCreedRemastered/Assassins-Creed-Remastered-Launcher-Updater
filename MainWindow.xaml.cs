@@ -152,7 +152,7 @@ namespace Assassins_Creed_Remastered_Launcher_Updater
                     {
                         if (System.IO.Path.GetFileName(file) != "Assassins Creed Remastered Launcher Updater.exe")
                         {
-                            System.IO.File.Move(file, path + @"\" + System.IO.Path.GetFileName(file));
+                            System.IO.File.Move(file, path + @"\" + System.IO.Path.GetFileName(file), true);
                         }
                     }
                 }
