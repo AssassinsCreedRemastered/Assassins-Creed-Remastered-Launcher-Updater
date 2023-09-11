@@ -77,7 +77,7 @@ namespace Assassins_Creed_Remastered_Launcher_Updater
                 using (WebClient client = new WebClient())
                 {
                     client.DownloadProgressChanged += WebClientDownloadProgressChanged;
-                    await client.DownloadFileTaskAsync(new Uri("https://github.com/AssassinsCreedRemastered/Assassins-Creed-Remastered-Launcher/releases/download/latest/Launcher.zip"), path + @"\Launcher.zip");
+                    await client.DownloadFileTaskAsync(new Uri("https://github.com/AssassinsCreedRemastered/Assassins-Creed-Remastered-Launcher/releases/latest/download/Launcher.zip"), path + @"\Launcher.zip");
                 }
                 await Task.Delay(10);
             }
